@@ -1,12 +1,9 @@
-version: '2'
+version: '3'
 
 services:
-
     snappass:
         build: .
         image: pinterest/snappass
-        ports:
-            - "5000:5000"
         stop_signal: SIGINT
         environment:
             - REDIS_HOST=redis
@@ -16,3 +13,15 @@ services:
 
     redis:
         image: "redis:latest"
+
+    nginx:
+        image: "nginx"
+        ports:
+            - "443:443"
+        depends_on:
+            - snappass
+        volumes:
+            - ./nginx_proxy_http.conf:/etc/nginx/conf.d/nginx_proxy_http.conf
+            - ./start-nginx.sh:/opt/nginx/start-nginx.sh
+        command:
+            - /opt/nginx/start-nginx.sh
